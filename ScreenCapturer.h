@@ -7,7 +7,9 @@ class ScreenCapturer {
 private:
 	int windowWidth;
 	int windowHeight;
-
+	int cx; //center-x
+	int cy; // center-y
+	int x1, x2, y1, y2; // left-top, right-top, left-down, right-down
 	HWND hWnd;
 	HDC hWindowDC;
 	HDC hCaptureDC;

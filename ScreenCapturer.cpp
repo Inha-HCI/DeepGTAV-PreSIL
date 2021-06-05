@@ -14,8 +14,14 @@ ScreenCapturer::ScreenCapturer(int frameWidth, int frameHeight){
 	hWnd = ::FindWindow(NULL, "Grand Theft Auto V");
 	
 	hWindowDC = GetDC(NULL); //get window DC
+	cx = int(GetSystemMetrics(SM_CXSCREEN)/2);
+	cy = int(GetSystemMetrics(SM_CYSCREEN)/2);
 	
-	
+	x1 = cx - int(imageWidth/2);
+	y1 = cy - int(imageHeight/2);
+	x2 = cx + int(imageWidth / 2);
+	y2 = cy + int(imageHeight / 2);
+
 	hCaptureDC = CreateCompatibleDC(hWindowDC);
 	hCaptureBitmap = CreateCompatibleBitmap(hWindowDC, imageWidth, imageHeight);
 	SelectObject(hCaptureDC, hCaptureBitmap);
@@ -39,6 +45,6 @@ ScreenCapturer::~ScreenCapturer(){
 }
 
 void ScreenCapturer::capture() {
-	StretchBlt(hCaptureDC, 0, 0, imageWidth, imageHeight, hWindowDC, 0, 0, windowWidth, windowHeight, SRCCOPY);
+	StretchBlt(hCaptureDC, 0, 0, imageWidth, imageHeight, hWindowDC, x1, y1, windowWidth, windowHeight, SRCCOPY);
 	GetDIBits(hCaptureDC, hCaptureBitmap, 0, imageHeight, pixels, (BITMAPINFO*)&info, DIB_RGB_COLORS);
 }
