@@ -21,8 +21,8 @@ def ensureDirExists(filename):
             if exc.errno != errno.EEXIST:
                 raise
 
-width = 1920
-height = 1080
+width = 800
+height = 600
 index = 0 #Use startIndex to change index to start on
 startIndex = 0
 
@@ -37,23 +37,23 @@ collectOffscreen = False
 captureRate = 1
 driveMode = 786603 #Normal?
 
-base_folder = os.environ['DEEPGTAV_EXPORT_DIR'] + "\\"
+base_folder = os.environ['DEEPGTAV_EXPORT_DIR']
 if tracking:
-    base_folder = base_folder + "tracking\\"
+    base_folder = os.path.join(base_folder + "tracking")
     collectVehicles = True
     collectPeds = True
     collectOffscreen = False
     captureRate = 25
     driveMode = 537657771 #stop at lights; use blinkers; avoid highways
 else:
-    base_folder = base_folder + "object\\"
+    base_folder = os.path.join(base_folder, "object")
 
 # Stores a dataset file with data coming from DeepGTAV
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=None)
     parser.add_argument('-l', '--host', default='localhost', help='The IP where DeepGTAV is running')
     parser.add_argument('-p', '--port', default=8000, help='The port where DeepGTAV is running')
-    default_dataset_path = None#base_folder + 'dataset.pz'
+    default_dataset_path = os.path.join(base_folder, 'dataset.pz')
     parser.add_argument('-d', '--dataset_path', default=default_dataset_path, help='Place to store the dataset')
     args = parser.parse_args()
 
@@ -136,7 +136,8 @@ if __name__ == '__main__':
         # startLocation = [-564.368, 26.8335, 47, 295.413]
 
         lidarParam = 7
-        dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds, reward=[15.0, 0.0],
+        dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds, 
+                        reward=[15.0, 0.0],
                         direction=None, speed=True, yawRate=True, location=True, time=True, offscreen=collectOffscreen, showBoxes=False, pointclouds=True,
                         stationaryScene=True, collectTracking=tracking, vehiclesToCreate=vehicles, pedsToCreate=peds, startIndex=startIndex, lidarParam=lidarParam,
                         recordScenario=recordScenario, positionScenario=positionScenario)
@@ -155,7 +156,8 @@ if __name__ == '__main__':
         set_speed = 2.0
 
         # Call to start dataset collection
-        dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds, reward=[15.0, 0.0],
+        dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds, 
+                        reward=[15.0, 0.0],
                         direction=None, speed=True, yawRate=True, location=True, time=True, offscreen=collectOffscreen, showBoxes=False, pointclouds=True,
                         stationaryScene=False, collectTracking=tracking, vehiclesToCreate=vehicles, pedsToCreate=peds, startIndex=startIndex, recordScenario=recordScenario, positionScenario=positionScenario)
 
@@ -186,6 +188,7 @@ if __name__ == '__main__':
             try:
                 # We receive a message as a Python dictionary
                 message = client.recvMessage()  
+                
                 index = message['index']
 
                 print("Starting index %d" % index)
@@ -197,14 +200,17 @@ if __name__ == '__main__':
                 if oldExport:
                     # The frame is a numpy array and can be displayed using OpenCV or similar       
                     image = frame2numpy(message['frame'], (width,height))
-                    filename = "%simage_2\\%s.png" % (base_folder, indexString)
+                    filename = os.path.join(base_folder, "image_2", "%s.png" % (indexString))
                     ensureDirExists(filename)
                     cv2.imwrite(filename, image)
+                    print(image.shape)
+                    print(base_folder)
+                    cv2.imwrite(base_folder, image)
                     print("image written index %d" % index)
                     
                     #Output tracking labels
                     if tracking:
-                        filename = "%slabels_tracking\\%04d.txt" % (base_folder, message['seriesIndex'])
+                        filename = os.path.join(base_folder, "labels_tracking", "%04d.txt" % (message['seriesIndex']))
                         ensureDirExists(filename)
                         text_file = open(filename, "a")
                         text_file.write("")
@@ -215,7 +221,7 @@ if __name__ == '__main__':
                             printInstances(filename, message['peds'], False, True, index)
                     
                     #Output object detections
-                    filename = "%slabels\\%s.txt" % (base_folder, indexString)
+                    filename = os.path.join(base_folder, "labels", "%s.txt" % (indexString))
                     ensureDirExists(filename)
                     text_file = open(filename, "w")
                     text_file.write("")
@@ -226,7 +232,7 @@ if __name__ == '__main__':
                         printInstances(filename, message['peds'], False)
                     
                     #Output unprocessed detections (For testing)
-                    filename = "%slabels_unprocessed\\%s.txt" % (base_folder, indexString)
+                    filename = os.path.join(base_folder, "labels_unprocessed", "%s.txt" % (base_folder, indexString))
                     ensureDirExists(filename)
                     text_file = open(filename, "w")
                     text_file.write("")
@@ -237,7 +243,7 @@ if __name__ == '__main__':
                         printInstances(filename, message['peds'], False, False, index, False)
                     
                     #Output object detections with augmentations
-                    filename = "%slabels_aug\\%s.txt" % (base_folder, indexString)
+                    filename = os.path.join(base_folder, "labels_aug", "%s.txt" % (indexString))
                     ensureDirExists(filename)
                     text_file = open(filename, "w")
                     text_file.write("")
@@ -250,11 +256,11 @@ if __name__ == '__main__':
                     #Print calib file
                     if tracking:
                         if index == 0:
-                            filename = "%scalib\\%04d.txt" % (base_folder, message['seriesIndex'])
+                            filename = os.path.join(base_folder, "calib", "%04d.txt" % (message['seriesIndex']))
                             ensureDirExists(filename)
                             printCalib(filename, message['focalLen'], width, height)
                     else:
-                        filename = "%scalib\\%s.txt" % (base_folder, indexString)
+                        filename = os.path.join(base_folder, "calib", "%s.txt" % (indexString))
                         ensureDirExists(filename)
                         printCalib(filename, message['focalLen'], width, height)
 
@@ -269,7 +275,7 @@ if __name__ == '__main__':
                         # text_file.write("%s %s\n" % (dateString, text))
                         # text_file.close()
 
-                        filename = "%soxts\\data\\%s.txt" % (base_folder, indexString)
+                        filename = os.path.join(base_folder, "oxts", "data", "%s.txt" % (indexString))
                         ensureDirExists(filename)
                         text_file = open(filename, "w")
                         #
@@ -281,7 +287,7 @@ if __name__ == '__main__':
                     #Output current location:
                     outputCurrLocation = False
                     if outputCurrLocation:
-                        filename = "%slocation.txt" % (base_folder)
+                        filename = os.path.join(base_folder, "location.txt")
                         ensureDirExists(filename)
                         text_file = open(filename, "w")
                         text_file.write("x: %d, y: %d, z: %d, heading %d" % (curPosition[0], curPosition[1], curPosition[2], curPosition[3]))

@@ -147,6 +147,9 @@ void Scenario::parseDatasetConfig(const Value& dc, bool setDefaults) {
 		if (dc["reward"][0].IsFloat() && dc["reward"][1].IsFloat()) {
 			rewarder = new GeneralRewarder((char*)(GetCurrentModulePath() + "paths.xml").c_str(), dc["reward"][0].GetFloat(), dc["reward"][1].GetFloat());
 			reward = true;
+            /*rewarder = new GeneralRewarder((char*)("D:\\SteamLibrary\\steamapps\\common\\Grand Theft Auto V\\paths.xml"), dc["reward"][0].GetFloat(), 0.5);
+            reward = true;*/
+            //log((char*)(GetCurrentModulePath() + "paths.xml").c_str());
 		}
 		else if (setDefaults) reward = _REWARD_;
 	}
@@ -218,6 +221,7 @@ void Scenario::parseDatasetConfig(const Value& dc, bool setDefaults) {
                 }
             }
         }
+
         pedsToCreate.clear();
         log("About to get ped");
         if (!dc["pedsToCreate"].IsNull()) {
@@ -525,7 +529,7 @@ StringBuffer Scenario::generateMessage() {
 
     setRenderingCam(m_ownVehicle, CAM_OFFSET_UP, CAM_OFFSET_FORWARD);
 
-    ////Can check whether camera and vehicle are aligned
+    //Can check whether camera and vehicle are aligned
     //Vector3 camRot2 = CAM::GET_CAM_ROT(camera, 0);
     //std::ostringstream oss1;
     //oss1 << "entityRotation X: " << rotation.x << " Y: " << rotation.y << " Z: " << rotation.z <<
@@ -660,18 +664,22 @@ void Scenario::generateSecondaryPerspective(ObjEntity vInfo) {
 }
 
 void Scenario::setThrottle(){
+    log("Set Throttle");
 	d["throttle"] = getFloatValue(m_ownVehicle, 0x92C);
 }
 
 void Scenario::setBrake(){
+    log("Set Brake!");
 	d["brake"] = getFloatValue(m_ownVehicle, 0x930);
 }
 
 void Scenario::setSteering(){
+    log("Set Steering!");
 	d["steering"] = -getFloatValue(m_ownVehicle, 0x924) / 0.6981317008;
 }
 
 void Scenario::setDirection(){
+    log("Set Direction");
 	int direction;
 	float distance;
 	Vehicle temp_vehicle;
@@ -689,6 +697,7 @@ void Scenario::setReward() {
 static int bike_num = 0;
 
 void Scenario::createVehicle(const char* model, float relativeForward, float relativeRight, float heading, int color, int color2) {
+    log("Create Vehicle!");
     Hash vehicleHash = GAMEPLAY::GET_HASH_KEY(const_cast<char*>(model));
     Vector3 pos;
     pos.x = currentPos.x + currentForwardVector.x * relativeForward + currentRightVector.x * relativeRight;
@@ -722,6 +731,7 @@ void Scenario::createVehicle(const char* model, float relativeForward, float rel
 }
 
 void Scenario::createPed(int model, float relativeForward, float relativeRight, float heading, int task) {
+    log("Create Ped!");
     //Ped hashes found at: https://www.se7ensins.com/forums/threads/request-pc-ped-hashes.1317848/
     Hash hash = 0x505603B9;// GAMEPLAY::GET_HASH_KEY(const_cast<char*>(model));
     Vector3 pos;
@@ -843,6 +853,7 @@ void Scenario::drawBoxes(Vector3 BLL, Vector3 FUR, Vector3 dim, Vector3 upVector
 }
 
 void Scenario::setCamParams() {
+    log("Set Cam Params! in Scenario.cpp in 856lines!");
     //These values stay the same throughout a collection period
     if (!s_camParams.init) {
         s_camParams.nearClip = CAM::GET_CAM_NEAR_CLIP(camera);
@@ -886,9 +897,9 @@ void Scenario::setCamParams() {
 
     //For measuring height of camera (LiDAR) to ground plane
     /*float groundZ;
-    GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(s_camParams.pos.x, s_camParams.pos.y, s_camParams.pos.z, &(groundZ), 0);
+    GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(s_camParams.pos.x, s_camParams.pos.y, s_camParams.pos.z, &(groundZ), 0);*/
     
-    std::ostringstream oss;
+    /*std::ostringstream oss;
     oss << "LiDAR height: " << s_camParams.pos.z - groundZ;
     std::string str = oss.str();
     log(str);*/

@@ -6,7 +6,7 @@ import numpy as np
 from numpy.lib.stride_tricks import as_strided
 
 class Scenario:
-    def __init__(self, location=None, time=None, weather=None, vehicle=None, drivingMode=None):
+    def __init__(self, location=None, time=None, weather="CLEAR", vehicle=None, drivingMode=None):
         self.location = location #[x,y,heading] (heading optional)
         self.time = time #[hour, minute]
         self.weather = weather #string
@@ -95,6 +95,7 @@ class Commands:
         
 def frame2numpy(frame, frameSize):
     buff = np.fromstring(frame, dtype='uint8')
+    
     # Scanlines are aligned to 4 bytes in Windows bitmaps
     strideWidth = int((frameSize[0] * 3 + 3) / 4) * 4
     # Return a copy because custom strides are not supported by OpenCV.
