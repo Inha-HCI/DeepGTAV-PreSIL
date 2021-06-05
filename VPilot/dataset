@@ -107,7 +107,8 @@ if __name__ == '__main__':
         #peds.append([5, 8, 0, 270])
 
         # TruPercept Scenario: Occluded pedestrian
-        startLocation = [245, -995, 30]
+        # startLocation = [245, -995, 30]
+        startLocation = [-1590.750000, -162.250000, 54.562500]
         vehicles.append(["granger", 7, 3, 0, 0, 0])
         peds.append([10, 10, 5, 90])
         vehicles.append(["voltic", 25, -2, 180, 0, 0])
@@ -181,8 +182,8 @@ if __name__ == '__main__':
     #     client.sendMessage(Config(dataset=dataset,scenario=scenario))
 
     print("Message sent to client to begin.")
-    # Start listening for messages coming from DeepGTAV. We do it for 80 hours
-    stoptime = time.time() + 80*3600
+    # Start listening for messages coming from DeepGTAV. We do it for 80  -> 0.2
+    stoptime = time.time() + 0.2*3600 # 80 -> 0.2
     while time.time() < stoptime:
         if not recordScenario and not positionScenario:
             try:

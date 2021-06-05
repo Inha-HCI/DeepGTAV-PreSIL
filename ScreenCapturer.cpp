@@ -13,7 +13,7 @@ ScreenCapturer::ScreenCapturer(int frameWidth, int frameHeight){
 	GRAPHICS::_GET_SCREEN_ACTIVE_RESOLUTION(&windowWidth, &windowHeight);
 	hWnd = ::FindWindow(NULL, "Grand Theft Auto V");
 	
-	//hWindowDC = GetDC(NULL); //get window DC
+	hWindowDC = GetDC(NULL); //get window DC
 	
 	
 	hCaptureDC = CreateCompatibleDC(hWindowDC);

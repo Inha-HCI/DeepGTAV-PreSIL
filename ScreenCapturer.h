@@ -2,7 +2,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <afxwin.h>
+
 class ScreenCapturer {
 private:
 	int windowWidth;
@@ -11,7 +11,7 @@ private:
 	HWND hWnd;
 	HDC hWindowDC;
 	HDC hCaptureDC;
-	CWnd hCaptureWnd;
+
 	HBITMAP hCaptureBitmap;
 	BITMAPINFOHEADER info;
 public:
